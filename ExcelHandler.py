@@ -80,8 +80,7 @@ for n in range(0, len(Data.dldlSupplier)):
     newsheet.write(x + n, y + 6, xlwt.Formula('F' + str(x + n + 1) + '/C' + str(x + len(Data.dldlSupplier) + 1)),
                    table_style)
     for m in range(0, len(Data.province)):
-        newsheet.write(x + n, y + 7 + m, Data.dldlBiddingFrame.iloc[n, m], table_style)
-    # print(Data.dldlBiddingFrame.iloc[n, 1])
+        newsheet.write(x + n, y + 7 + 3 * m, (Data.dldlBiddingFrame.iloc[n, m] if (Data.dldlBiddingFrame.iloc[n, m]) else 0), table_style)
     # TODO
 x += len(Data.dldlSupplier)
 newsheet.write(x, y + 1, '%d家合计' % len(Data.dldlSupplier), table_style)
