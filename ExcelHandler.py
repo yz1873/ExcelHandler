@@ -1,4 +1,5 @@
 import xlwt
+import math
 import pandas as pd
 import numpy as np
 import Data
@@ -9,7 +10,7 @@ currentMonth = 7
 
 #  路径前加r（原因：文件名中的 \U 开始的字符被编译器认为是八进制）
 #  保存输出数据的文档地址
-resultFile_path = r"C:\Users\Administrator\Desktop\数据结果.xls"
+resultFile_path = r"C:\Users\Zhang Yu\Desktop\数据结果.xls"
 
 # 创建结果表
 wb = xlwt.Workbook(encoding='utf-8', style_compression=0)
@@ -80,7 +81,8 @@ for n in range(0, len(Data.dldlSupplier)):
     newsheet.write(x + n, y + 6, xlwt.Formula('F' + str(x + n + 1) + '/C' + str(x + len(Data.dldlSupplier) + 1)),
                    table_style)
     for m in range(0, len(Data.province)):
-        newsheet.write(x + n, y + 7 + 3 * m, (Data.dldlBiddingFrame.iloc[n, m] if (Data.dldlBiddingFrame.iloc[n, m]) else 0), table_style)
+        newsheet.write(x + n, y + 7 + 3 * m, (0 if math.isnan(Data.dldlBiddingFrame.iloc[n, m])
+                                              else Data.dldlBiddingFrame.iloc[n, m]), table_style)
     # TODO
 x += len(Data.dldlSupplier)
 newsheet.write(x, y + 1, '%d家合计' % len(Data.dldlSupplier), table_style)
