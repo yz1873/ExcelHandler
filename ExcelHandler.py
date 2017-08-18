@@ -9,8 +9,9 @@ import Functions
 currentMonth = 7
 
 #  路径前加r（原因：文件名中的 \U 开始的字符被编译器认为是八进制）
-#  保存输出数据的文档地址
-resultFile_path = r"C:\Users\Zhang Yu\Desktop\数据结果.xls"
+#  保存输出数据的文档地址  Administrator
+resultFile_path = r"C:\Users\Administrator\Desktop\数据结果.xls"
+# resultFile_path = r"C:\Users\Zhang Yu\Desktop\数据结果.xls"
 
 # 创建结果表
 wb = xlwt.Workbook(encoding='utf-8', style_compression=0)
@@ -35,7 +36,21 @@ textstyle = 'font: name 微软雅黑, height 180;'  #  粗体字
 textstyle += 'align: horz centre, vert center; '  #  居中
 tablestyle += 'borders: left THIN, right THIN, top THIN, bottom THIN; '  #  边框
 text_style = xlwt.easyxf(textstyle)
-
+text_style.num_format_str = "#,##0.00"
+# 百分比格式
+percent_font = xlwt.Font()
+percent_font.name = '微软雅黑'
+percent_font.height = 180
+percent_font.bold = True
+percent_borders = xlwt.Borders()
+percent_borders.left = xlwt.Borders.THIN
+percent_borders.right = xlwt.Borders.THIN
+percent_borders.top = xlwt.Borders.THIN
+percent_borders.bottom = xlwt.Borders.THIN
+percent_style = xlwt.XFStyle()
+percent_style.num_format_str = '0.00%'
+percent_style.font = percent_font
+percent_style.borders = percent_borders
 
 # 表头
 x = 0
@@ -75,21 +90,31 @@ for n in range(0, len(Data.dldlSupplier)):
     newsheet.write(x + n, y + 1, Data.dldlSupplier[n], table_style)
     newsheet.write(x + n, y + 2, Data.dldlTotalBiddingData[n], table_style)
     newsheet.write(x + n, y + 3, xlwt.Formula('C' + str(x + n + 1) + '/C' + str(x + len(Data.dldlSupplier) + 1)),
-                   table_style)
+                   percent_style)
     newsheet.write(x + n, y + 4, n+1, table_style)
     newsheet.write(x + n, y + 5, xlwt.Formula(Functions.mergeStr(x + n + 1)), table_style)
     newsheet.write(x + n, y + 6, xlwt.Formula('F' + str(x + n + 1) + '/C' + str(x + len(Data.dldlSupplier) + 1)),
-                   table_style)
+                   percent_style)
     for m in range(0, len(Data.province)):
-        newsheet.write(x + n, y + 7 + 3 * m, (0 if math.isnan(Data.dldlBiddingFrame.iloc[n, m])
-                                              else Data.dldlBiddingFrame.iloc[n, m]), table_style)
-    # TODO
+        newsheet.write(x + n, y + 7 + 3 * m, (Functions.intTran(Data.dldlBiddingFrame.iloc[n, m])), table_style)
+        newsheet.write(x + n, y + 8 + 3 * m, (Functions.intTran(Data.dldlFrame.iloc[n, m])), table_style)
+        newsheet.write(x + n, y + 9 + 3 * m, (0 if (Functions.intTran(Data.dldlBiddingFrame.iloc[n, m]) == 0)
+                                              else (Functions.intTran(Data.dldlFrame.iloc[n, m])/
+                                                    Functions.intTran(Data.dldlBiddingFrame.iloc[n, m]))), percent_style)
 x += len(Data.dldlSupplier)
 newsheet.write(x, y + 1, '%d家合计' % len(Data.dldlSupplier), table_style)
 newsheet.write(x, y + 2, Functions.totalCount(Data.dldlTotalBiddingData), table_style)
-newsheet.write(x, y + 3, '100%', table_style)
+newsheet.write(x, y + 3, 1, percent_style)
 newsheet.write(x, y + 4, '---', table_style)
 newsheet.write(x, y + 5, xlwt.Formula(Functions.mergeStr(x + 1)), table_style)
-newsheet.write(x, y + 6, xlwt.Formula('F' + str(x + 1) + '/C' + str(x + 1)), table_style)
+newsheet.write(x, y + 6, xlwt.Formula('F' + str(x + 1) + '/C' + str(x + 1)), percent_style)
+for m in range(0, len(Data.province)):
+    newsheet.write(x, y + 7 + 3 * m, Functions.totalCountByProvince(m, Data.dldlBiddingFrame), table_style)
+    newsheet.write(x, y + 8 + 3 * m, Functions.totalCountByProvince(m, Data.dldlFrame), table_style)
+    newsheet.write(x, y + 9 + 3 * m, (0 if (Functions.totalCountByProvince(m, Data.dldlBiddingFrame) == 0)
+                                      else (Functions.totalCountByProvince(m, Data.dldlFrame)/Functions.
+                                            totalCountByProvince(m, Data.dldlBiddingFrame))), percent_style)
+
+
 
 wb.save(resultFile_path)
