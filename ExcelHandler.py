@@ -15,9 +15,10 @@ cursor = connection.cursor()
 # 执行sql语句
 try:
     # 执行sql语句，进行查询
-    cursor.execute(Data.dldlSqlStr, Data.end_data)
+    cursor.execute(Data.dldlSqlStr)
     dldlresult = cursor.fetchall()
     Functions.countByRow(dldlresult, Data.dldlFrame, Data.dldlSupplier)
+    # print(dldlresult[0]['省分公司'])
     print(dldlresult)
     print(Data.dldlFrame)
     # cursor.execute(Data.kxSqlStr, Data.end_data)

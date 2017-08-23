@@ -54,4 +54,7 @@ def writeByGoods(x, y, GoodsSupplier, GoodsInfo, GoodsTotalBiddingData, GoodsBid
 
 def countByRow(result, dataframe, supplier):    # TODO 永不用判断是NaN
     for row in result:
-        dataframe.iloc[supplier.index(row[2]), Data.province.index(row[0])] += row[1]
+        if math.isnan(dataframe.iloc[supplier.index(row['供应商']), Data.province.index(row['省分公司'])]):
+            dataframe.iloc[supplier.index(row['供应商']), Data.province.index(row['省分公司'])] = row['采购数量']
+        else:
+            dataframe.iloc[supplier.index(row['供应商']), Data.province.index(row['省分公司'])] += row['采购数量']

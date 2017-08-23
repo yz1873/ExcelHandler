@@ -8,15 +8,15 @@ end_data = datetime.date(2017, 7, 31)
 
 #  路径前加r（原因：文件名中的 \U 开始的字符被编译器认为是八进制）
 #  保存输出数据的文档地址  Administrator
-resultFile_path = r"C:\Users\Administrator\Desktop\数据结果.xls"
-# resultFile_path = r"C:\Users\Zhang Yu\Desktop\数据结果.xls"
+# resultFile_path = r"C:\Users\Administrator\Desktop\数据结果.xls"
+resultFile_path = r"C:\Users\Zhang Yu\Desktop\数据结果.xls"
 
 config = {
-          'host': 'rm-uf6ee3334gs8bk4f5o.mysql.rds.aliyuncs.com',
+          'host': '10.0.204.205',
           'port': 3306,
-          'user': 'root',
-          'password': 'Zy890924@',
-          'db': 'report',
+          'user': 'read2Pan20170217',
+          'password': 'Read2Pan20170217',
+          'db': 'eshop',
           'charset': 'utf8mb4',
           'cursorclass': pymysql.cursors.DictCursor,
           }
@@ -33,16 +33,19 @@ dldlSqlStr = "select LEFT(o.province_name,2) '省分公司', p.real_nums '采购
              "LEFT JOIN eshop_provideraddress epa ON epa.providerId = p.provider_id " \
              "LEFT JOIN eshop_provider_contact c ON c.provider_id = p.provider_id " \
              "LEFT JOIN eshop_goods g ON g.item_all = p.ITEM_NUMBER " \
-             "WHERE epa.shop_id = o.shop_id " \
+             "WHERE " \
+             "epa.shop_id = o.shop_id " \
              "AND c.shop_id = o.shop_id " \
              "AND g.shop_id = o.shop_id " \
-             "AND o.shop_id = ' 596 ' " \
+             "AND " \
+             "o.shop_id = ' 596 ' " \
              "AND p.CONTACT_NUMBER = c.contact_number " \
              "AND p.CONTACT_NUMBER IN ('CU12-1001-2016-001073','CU12-1001-2016-001074'," \
              "'CU12-1001-2016-001075','CU12-1001-2016-001076','CU12-1001-2016-001077'," \
              "'CU12-1001-2016-001078','CU12-1001-2016-001079','CU12-1001-2016-001080','CU12-1001-2016-001081') " \
              "AND o.`status` in ('2','5') " \
-             "AND o.create_time < %s"
+             "AND o.create_time BETWEEN '2017-01-01' And '2017-01-30' "
+
 
 dldlInfo = "电力电缆（单位：米）  备注：江苏中利集团股份有限即中利科技"
 dldlSupplier = ['江苏亨通', '中天科技', '江苏俊知', '成都大唐', '富通集团', '通鼎互联', '中利科技', '鲁能泰山', '西部电缆']
