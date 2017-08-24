@@ -52,7 +52,7 @@ def writeByGoods(x, y, GoodsSupplier, GoodsInfo, GoodsTotalBiddingData, GoodsBid
                                           else (totalCountByProvince(m, GoodsFrame)/
                                                 totalCountByProvince(m, GoodsBiddingFrame))), percent_style)
 
-def countByRow(result, dataframe, supplier):    # TODO 永不用判断是NaN
+def countByRow(result, dataframe, supplier):
     for row in result:
         if math.isnan(dataframe.iloc[supplier.index(row['供应商']), Data.province.index(row['省分公司'])]):
             dataframe.iloc[supplier.index(row['供应商']), Data.province.index(row['省分公司'])] = row['采购数量']

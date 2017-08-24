@@ -99,6 +99,26 @@ dldlData = {}
 dldlFrame = pd.DataFrame(dldlData, columns=province, index=dldlSupplier)
 
 # 馈线（简称kx）
+
+kxSqlStr = "select LEFT(o.province_name,2) '省分公司', p.real_nums '采购数量', LEFT(p.provider_name,4) '供应商'  " \
+            "from eshop_order_product p " \
+            "LEFT JOIN eshop_order o ON p.order_id = o.id " \
+            "LEFT JOIN eshop_provideraddress epa ON epa.providerId = p.provider_id " \
+            "LEFT JOIN eshop_provider_contact c ON c.provider_id = p.provider_id " \
+            "LEFT JOIN eshop_goods g ON g.item_all = p.ITEM_NUMBER " \
+            "LEFT JOIN eshop_materials_catergorytree mac ON mac.id =p.goodstype_id " \
+            "WHERE epa.shop_id = o.shop_id " \
+             "AND c.shop_id = o.shop_id " \
+             "AND g.shop_id = o.shop_id " \
+             "AND o.shop_id = ' 596 ' " \
+             "AND p.CONTACT_NUMBER = c.contact_number " \
+             "AND p.CONTACT_NUMBER IN ('CU12-1001-2016-001103','CU12-1001-2016-001104','CU12-1001-2016-001105'," \
+             "'CU12-1001-2016-001106','CU12-1001-2016-001107','CU12-1001-2016-001108'," \
+             "'CU12-1001-2016-001109','CU12-1001-2016-001110','CU12-1001-2016-001111')" \
+             "AND o.`status` in ('2','5') " \
+             "AND mac.name = '铜缆' " \
+             "AND o.create_time BETWEEN '2016-01-01' And '%s' " \
+             "GROUP BY p.id " % end_data
 kxInfo = "馈线（单位：米）"
 kxSupplier = ['江苏俊知', '江苏亨鑫', '珠海汉胜', '长飞光纤', '通鼎互联',
               '中天射频', '成都大唐', '富通集团', '湖北凯乐']
