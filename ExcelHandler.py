@@ -13,19 +13,19 @@ connection = pymysql.connect(**Data.config)
 # 使用cursor()方法获取操作游标
 cursor = connection.cursor()
 # 执行sql语句
-try:
+# try:
     # 执行sql语句，进行查询
-    cursor.execute(Data.dldlSqlStr)
-    dldlresult = cursor.fetchall()
-    Functions.countByRow(dldlresult, Data.dldlFrame, Data.dldlSupplier)
+cursor.execute(Data.dldlSqlStr)
+dldlresult = cursor.fetchall()
+Functions.countByRow(dldlresult, Data.dldlFrame, Data.dldlSupplier)
     # print(dldlresult[0]['省分公司'])
-    print(dldlresult)
-    print(Data.dldlFrame)
+print(dldlresult)
+print(Data.dldlFrame)
     # cursor.execute(Data.kxSqlStr, Data.end_data)
     # kxresult = cursor.fetchall()
     # print(dldlresult)
-except:
-    print("Error: unable to fecth data")
+# except:
+#     print("Error: unable to fecth data")
 connection.close()
 
 #  Excel输出

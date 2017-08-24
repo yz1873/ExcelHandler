@@ -27,28 +27,38 @@ province = ['北京', '天津', '河北', '山西', '内蒙', '辽宁', '吉林'
             '四川', '贵州', '云南', '西藏', '陕西', '甘肃', '青海', '宁夏', '新疆']
 
 # 电力电缆（简称dldl）
-dldlSqlStr = "select LEFT(o.province_name,2) '省分公司', p.real_nums '采购数量', LEFT(p.provider_name,4) '供应商' " \
+dldlSqlStr = "select LEFT(o.province_name,2) '省分公司', p.real_nums '采购数量', " \
+             "CASE " \
+             "WHEN p.provider_id = 49230 THEN '江苏中利' " \
+             "WHEN p.provider_id = 49256 THEN '通鼎互联' " \
+             "WHEN p.provider_id = 49214 THEN '江苏俊知' " \
+             "WHEN p.provider_id = 49227 THEN '中天科技' " \
+             "WHEN p.provider_id = 49224 THEN '江苏亨通' " \
+             "WHEN p.provider_id = 49228 THEN '西部电缆' " \
+             "WHEN p.provider_id = 49231 THEN '鲁能泰山' " \
+             "WHEN p.provider_id = 49210 THEN '成都大唐' " \
+             "WHEN p.provider_id = 49226 THEN '富通集团' " \
+             "END '供应商' " \
              "from eshop_order_product p " \
              "LEFT JOIN eshop_order o ON p.order_id = o.id " \
              "LEFT JOIN eshop_provideraddress epa ON epa.providerId = p.provider_id " \
              "LEFT JOIN eshop_provider_contact c ON c.provider_id = p.provider_id " \
              "LEFT JOIN eshop_goods g ON g.item_all = p.ITEM_NUMBER " \
-             "WHERE " \
-             "epa.shop_id = o.shop_id " \
+             "WHERE epa.shop_id = o.shop_id " \
              "AND c.shop_id = o.shop_id " \
              "AND g.shop_id = o.shop_id " \
-             "AND " \
-             "o.shop_id = ' 596 ' " \
+             "AND o.shop_id = ' 596 ' " \
              "AND p.CONTACT_NUMBER = c.contact_number " \
              "AND p.CONTACT_NUMBER IN ('CU12-1001-2016-001073','CU12-1001-2016-001074'," \
              "'CU12-1001-2016-001075','CU12-1001-2016-001076','CU12-1001-2016-001077'," \
              "'CU12-1001-2016-001078','CU12-1001-2016-001079','CU12-1001-2016-001080','CU12-1001-2016-001081') " \
              "AND o.`status` in ('2','5') " \
-             "AND o.create_time BETWEEN '2017-01-01' And '2017-01-30' "
+             "AND o.create_time BETWEEN '2016-01-01' And '%s' " \
+             "GROUP BY p.id " %end_data
 
 
 dldlInfo = "电力电缆（单位：米）  备注：江苏中利集团股份有限即中利科技"
-dldlSupplier = ['江苏亨通', '中天科技', '江苏俊知', '成都大唐', '富通集团', '通鼎互联', '中利科技', '鲁能泰山', '西部电缆']
+dldlSupplier = ['江苏亨通', '中天科技', '江苏俊知', '成都大唐', '富通集团', '通鼎互联', '江苏中利', '鲁能泰山', '西部电缆']
 
 dldlTotalBiddingData = [2249329, 2164380, 2156859, 1102940, 1082391, 827624, 803870, 181140, 176960]
 
