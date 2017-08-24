@@ -19,11 +19,17 @@ try:
     # dldlresult = cursor.fetchall()
     # Functions.countByRow(dldlresult, Data.dldlFrame, Data.dldlSupplier)
 
-    cursor.execute(Data.kxSqlStr)
-    kxresult = cursor.fetchall()
-    Functions.countByRow(kxresult, Data.kxFrame, Data.kxSupplier)
+    # cursor.execute(Data.kxSqlStr)
+    # kxresult = cursor.fetchall()
+    # Functions.countByRow(kxresult, Data.kxFrame, Data.kxSupplier)
     # print(kxresult)
     # print(Data.kxFrame)
+
+    cursor.execute(Data.ktSqlStr)
+    ktresult = cursor.fetchall()
+    Functions.countByRow(ktresult, Data.ktFrame, Data.ktSupplier)
+    print(ktresult)
+    print(Data.ktFrame)
 except:
     print("Error: unable to fecth data")
 connection.close()
@@ -71,6 +77,10 @@ x += (len(Data.dldlSupplier)+1)
 Functions.writeByGoods(x, y, Data.kxSupplier, Data.kxInfo, Data.kxTotalBiddingData, Data.kxBiddingFrame,
                        Data.kxFrame, newsheet, Data.table_style, Data.text_style, Data.percent_style)
 x += (len(Data.kxSupplier)+1)
+
+Functions.writeByGoods(x, y, Data.ktSupplier, Data.ktInfo, Data.ktTotalBiddingData, Data.ktBiddingFrame,
+                       Data.ktFrame, newsheet, Data.table_style, Data.text_style, Data.percent_style)
+x += (len(Data.ktSupplier)+1)
 
 wb.save(Data.resultFile_path)
 
