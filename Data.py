@@ -4,8 +4,8 @@ import pymysql.cursors
 import datetime
 
 # 截至日
-end_data = datetime.date(2017, 7, 31)
-
+# end_data = datetime.date(2017, 7, 31)
+end_data = datetime.datetime(2017, 7, 31, 23, 59, 59)
 #  路径前加r（原因：文件名中的 \U 开始的字符被编译器认为是八进制）
 #  保存输出数据的文档地址  Administrator
 # resultFile_path = r"C:\Users\Administrator\Desktop\数据结果.xls"

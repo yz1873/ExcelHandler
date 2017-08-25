@@ -16,9 +16,9 @@ cursor = connection.cursor()
 try:
     # 执行sql语句，进行查询
 
-    # cursor.execute(Data.dldlSqlStr)
-    # dldlresult = cursor.fetchall()
-    # Functions.countByRow(dldlresult, Data.dldlFrame, Data.dldlSupplier)
+    cursor.execute(Data.dldlSqlStr)
+    dldlresult = cursor.fetchall()
+    Functions.countByRow(dldlresult, Data.dldlFrame, Data.dldlSupplier)
 
     # cursor.execute(Data.kxSqlStr)
     # kxresult = cursor.fetchall()
@@ -28,11 +28,11 @@ try:
     # ktresult = cursor.fetchall()
     # Functions.countByRow(ktresult, Data.ktFrame, Data.ktSupplier)
 
-    cursor.execute(Data.dySqlStr)
-    dyresult = cursor.fetchall()
-    Functions.countByRow(dyresult, Data.dyFrame, Data.dySupplier)
-    print(dyresult)
-    print(Data.dyFrame)
+    # cursor.execute(Data.dySqlStr)
+    # dyresult = cursor.fetchall()
+    # Functions.countByRow(dyresult, Data.dyFrame, Data.dySupplier)
+    # print(dyresult)
+    # print(Data.dyFrame)
 
 except:
     print("Error: unable to fecth data")
