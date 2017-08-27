@@ -102,7 +102,7 @@ x = 0
 y = 0
 providersheet.write_merge(x, x, y + 0, y + 9, '表一：按设备类型统计', Data.table_style)
 x += 1
-newsheet.col(x).height = 256 * 20
+providersheet.col(x).height = 256 * 20
 providersheet.write(x, y, '序号', Data.table_style)
 providersheet.write(x, y + 1, '设备类型', Data.table_style)
 providersheet.write(x, y + 2, '供应商', Data.table_style)
@@ -142,5 +142,95 @@ Functions.writeIn6(x, y, a, '个/套', Data.wjzSupplier, Data.wjzInfo, Data.wjzT
 x += (len(Data.wjzSupplier) + 1)
 a += len(Data.wjzSupplier)
 
+providersheet.write_merge(x, x, y, y + 2, '总计', Data.table_style)
+providersheet.write(x, y + 3, xlwt.Formula('D47+D42+D33+D22+D12'), Data.table_style)
+providersheet.write(x, y + 4, '', Data.table_style)
+providersheet.write(x, y + 5, xlwt.Formula('F47+F42+F33+F22+F12'), Data.table_style)
+providersheet.write(x, y + 6, '', Data.table_style)
+providersheet.write(x, y + 7, '', Data.table_style)
+providersheet.write(x, y + 8, xlwt.Formula('I47+I42+I33+I22+I12'), Data.table_style)
+providersheet.write(x, y + 9, '', Data.table_style)
+
+x = 0
+y += 12
+providersheet.write_merge(x, x, y + 0, y + 4, '表二：按供应商统计', Data.table_style)
+x += 1
+providersheet.write_merge(x, x + 1, y, y, '序号', Data.table_style)
+providersheet.write_merge(x, x + 1, y + 1, y + 1, '供应商', Data.table_style)
+providersheet.write_merge(x, x, y + 2, y + 4, '截止7月31日统计结果', Data.table_style)
+providersheet.write(x + 1, y + 2, '累计订单金额', Data.table_style)
+providersheet.write(x + 1, y + 3, '占比', Data.table_style)
+providersheet.write(x + 1, y + 4, '下单省分个数', Data.table_style)
+x += 2
+for n in range(0, len(Data.provider)):
+    providersheet.write(x + n, y, n + 1, Data.text_style)
+    providersheet.write(x + n, y + 1, Data.provider[n], Data.text_style)
+    providersheet.write(x + n, y + 2, Functions.totalPriceByProvider(Data.provider[n]), Data.text_style)
+    providersheet.write(x + n, y + 3, xlwt.Formula('O' + str(x + n + 1) + '/O' + str(x + 1 + len(Data.provider))),
+                        Data.percent_style)
+    providersheet.write(x + n, y + 4, Functions.countOrderProvince(Data.provider[n]), Data.text_style)
+x += len(Data.provider)
+providersheet.write(x, y, '', Data.text_style)
+providersheet.write(x, y + 1, '合计', Data.text_style)
+providersheet.write(x, y + 2, xlwt.Formula('SUM(O4:O36)'), Data.text_style)
+providersheet.write(x, y + 3, xlwt.Formula('SUM(P4:P36)'), Data.percent_style)
+providersheet.write(x, y + 4, '', Data.text_style)
+
+# EXCEL  provincesheet 输出
+for n in range(0, 30):
+    provincesheet.col(n).width = 256 * 11
+x = 0
+y = 0
+provincesheet.write(x, y, '', Data.table_style)
+provincesheet.write(x, y + 1, '', Data.table_style)
+provincesheet.write_merge(x, x, y + 2, y + 8, '分设备类型下单金额维度', Data.table_style)
+provincesheet.write_merge(x, x, y + 9, y + 14, '分设备类型下单数量维度', Data.table_style)
+provincesheet.write_merge(x, x, y + 15, y + 20, '分设备类型订单笔数维度', Data.table_style)
+x += 1
+provincesheet.write(x, y + 0, '序号', Data.table_style)
+provincesheet.write(x, y + 1, '单位', Data.table_style)
+provincesheet.write(x, y + 2, '电缆（万元）', Data.table_style)
+provincesheet.write(x, y + 3, '电源（万元）', Data.table_style)
+provincesheet.write(x, y + 4, '空调（万元）', Data.table_style)
+provincesheet.write(x, y + 5, '馈线（万元）', Data.table_style)
+provincesheet.write(x, y + 6, '微基站pRRU（万元）', Data.table_style)
+provincesheet.write(x, y + 7, '总计（万元）', Data.table_style)
+provincesheet.write(x, y + 8, '占比', Data.table_style)
+provincesheet.write(x, y + 9, '电缆（米）', Data.table_style)
+provincesheet.write(x, y + 10, '电源（套）', Data.table_style)
+provincesheet.write(x, y + 11, '空调（台）', Data.table_style)
+provincesheet.write(x, y + 12, '馈线（千米）', Data.table_style)
+provincesheet.write(x, y + 13, '微基站pRRU（个/套）', Data.table_style)
+provincesheet.write(x, y + 14, '总计（项）', Data.table_style)
+provincesheet.write(x, y + 15, '电缆（笔）', Data.table_style)
+provincesheet.write(x, y + 16, '电源（笔）', Data.table_style)
+provincesheet.write(x, y + 17, '空调（笔）', Data.table_style)
+provincesheet.write(x, y + 18, '馈线（笔）', Data.table_style)
+provincesheet.write(x, y + 19, '微基站pRRU（笔）', Data.table_style)
+provincesheet.write(x, y + 20, '总计（笔）', Data.table_style)
+x += 1
+for n in range(0, len(Data.province)):
+    Functions.writeIn9(x, y, n, provincesheet)
+    x += 1
+provincesheet.write_merge(x, x, y, y + 1, '合计', Data.table_style)
+provincesheet.write(x, y + 2, xlwt.Formula('SUM(C3:C33)'), Data.text_style)
+provincesheet.write(x, y + 3, xlwt.Formula('SUM(D3:D33)'), Data.text_style)
+provincesheet.write(x, y + 4, xlwt.Formula('SUM(E3:E33)'), Data.text_style)
+provincesheet.write(x, y + 5, xlwt.Formula('SUM(F3:F33)'), Data.text_style)
+provincesheet.write(x, y + 6, xlwt.Formula('SUM(G3:G33)'), Data.text_style)
+provincesheet.write(x, y + 7, xlwt.Formula('SUM(H3:H33)'), Data.text_style)
+provincesheet.write(x, y + 8, xlwt.Formula('SUM(I3:I33)'), Data.percent_style)
+provincesheet.write(x, y + 9, xlwt.Formula('SUM(J3:J33)'), Data.text_style)
+provincesheet.write(x, y + 10, xlwt.Formula('SUM(K3:K33)'), Data.text_style)
+provincesheet.write(x, y + 11, xlwt.Formula('SUM(L3:L33)'), Data.text_style)
+provincesheet.write(x, y + 12, xlwt.Formula('SUM(M3:M33)'), Data.text_style)
+provincesheet.write(x, y + 13, xlwt.Formula('SUM(N3:N33)'), Data.text_style)
+provincesheet.write(x, y + 14, xlwt.Formula('SUM(O3:O33)'), Data.text_style)
+provincesheet.write(x, y + 15, xlwt.Formula('SUM(P3:P33)'), Data.text_style)
+provincesheet.write(x, y + 16, xlwt.Formula('SUM(Q3:Q33)'), Data.text_style)
+provincesheet.write(x, y + 17, xlwt.Formula('SUM(R3:R33)'), Data.text_style)
+provincesheet.write(x, y + 18, xlwt.Formula('SUM(S3:S33)'), Data.text_style)
+provincesheet.write(x, y + 19, xlwt.Formula('SUM(T3:T33)'), Data.text_style)
+provincesheet.write(x, y + 20, xlwt.Formula('SUM(U3:U33)'), Data.text_style)
 
 wb.save(Data.resultFile_path)
