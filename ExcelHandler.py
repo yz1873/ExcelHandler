@@ -6,43 +6,44 @@ import pymysql.cursors
 # 创建结果表
 wb = xlwt.Workbook(encoding='utf-8', style_compression=0)
 # 创建newsheet 第二参数用于确认同一个cell单元是否可以重设值。
-newsheet = wb.add_sheet('datasheet', cell_overwrite_ok=True)
+newsheet = wb.add_sheet('分省分供应商数据', cell_overwrite_ok=True)
+providersheet = wb.add_sheet('6供应商数量', cell_overwrite_ok=True)
+provincesheet = wb.add_sheet('9分省评价', cell_overwrite_ok=True)
 
 # 连接数据库统计数据
 connection = pymysql.connect(**Data.config)
 # 使用cursor()方法获取操作游标
 cursor = connection.cursor()
 # 执行sql语句
-try:
-    # 执行sql语句，进行查询
 
-    cursor.execute(Data.dldlSqlStr)
-    dldlresult = cursor.fetchall()
-    Functions.countByRow(dldlresult, Data.dldlFrame, Data.dldlSupplier)
+cursor.execute(Data.dldlSqlStr)
+dldlresult = cursor.fetchall()
+Functions.countByRow(dldlresult, Data.dldlFrame, Data.dldlTotalPriceFrame, Data.dldlOrderQuantityFrame,
+                     Data.dldlSupplier)
 
-    # cursor.execute(Data.kxSqlStr)
-    # kxresult = cursor.fetchall()
-    # Functions.countByRow(kxresult, Data.kxFrame, Data.kxSupplier)
+cursor.execute(Data.kxSqlStr)
+kxresult = cursor.fetchall()
+Functions.countByRow(kxresult, Data.kxFrame, Data.kxTotalPriceFrame, Data.kxOrderQuantityFrame, Data.kxSupplier)
 
-    # cursor.execute(Data.ktSqlStr)
-    # ktresult = cursor.fetchall()
-    # Functions.countByRow(ktresult, Data.ktFrame, Data.ktSupplier)
+cursor.execute(Data.ktSqlStr)
+ktresult = cursor.fetchall()
+Functions.countByRow(ktresult, Data.ktFrame, Data.ktTotalPriceFrame, Data.ktOrderQuantityFrame, Data.ktSupplier)
 
-    # cursor.execute(Data.dySqlStr)
-    # dyresult = cursor.fetchall()
-    # Functions.countByRow(dyresult, Data.dyFrame, Data.dySupplier)
-    # print(dyresult)
-    # print(Data.dyFrame)
+cursor.execute(Data.dySqlStr)
+dyresult = cursor.fetchall()
+Functions.countByRow(dyresult, Data.dyFrame, Data.dyTotalPriceFrame, Data.dyOrderQuantityFrame, Data.dySupplier)
 
-except:
-    print("Error: unable to fecth data")
+cursor.execute(Data.wjzSqlStr)
+wjzresult = cursor.fetchall()
+Functions.countByRow(wjzresult, Data.wjzFrame, Data.wjzTotalPriceFrame, Data.wjzOrderQuantityFrame, Data.wjzSupplier)
+
 connection.close()
 
-#  Excel输出
+# EXCEL  datasheet 输出
+
 #  扩大1到100列的宽度
 for n in range(0, 100):
     newsheet.col(n).width = 256 * 11
-
 # 表头
 x = 0
 y = 0
@@ -73,7 +74,6 @@ for n in range(0, 31):
     newsheet.write(x, y + 3 * n + 2, '分省完成率=本省本期主材数量/本省中标份额*100%', Data.table_style)
 x += 1
 y = 0
-
 Functions.writeByGoods(x, y, Data.dldlSupplier, Data.dldlInfo, Data.dldlTotalBiddingData, Data.dldlBiddingFrame,
                        Data.dldlFrame, newsheet, Data.table_style, Data.text_style, Data.percent_style)
 x += (len(Data.dldlSupplier) + 1)
@@ -89,5 +89,58 @@ x += (len(Data.ktSupplier) + 1)
 Functions.writeByGoods(x, y, Data.dySupplier, Data.dyInfo, Data.dyTotalBiddingData, Data.dyBiddingFrame,
                        Data.dyFrame, newsheet, Data.table_style, Data.text_style, Data.percent_style)
 x += (len(Data.dySupplier) + 1)
+
+Functions.writeByGoods(x, y, Data.wjzSupplier, Data.wjzInfo, Data.wjzTotalBiddingData, Data.wjzBiddingFrame,
+                       Data.wjzFrame, newsheet, Data.table_style, Data.text_style, Data.percent_style)
+x += (len(Data.dySupplier) + 1)
+
+# EXCEL  providersheet 输出
+#  扩大1到100列的宽度
+for n in range(0, 30):
+    providersheet.col(n).width = 256 * 11
+x = 0
+y = 0
+providersheet.write_merge(x, x, y + 0, y + 9, '表一：按设备类型统计', Data.table_style)
+x += 1
+newsheet.col(x).height = 256 * 20
+providersheet.write(x, y, '序号', Data.table_style)
+providersheet.write(x, y + 1, '设备类型', Data.table_style)
+providersheet.write(x, y + 2, '供应商', Data.table_style)
+providersheet.write(x, y + 3, '订单金额', Data.table_style)
+providersheet.write(x, y + 4, '占比', Data.table_style)
+providersheet.write(x, y + 5, '订单数量（指主产累计采购数量，请剔除辅材）', Data.table_style)
+providersheet.write(x, y + 6, '单位', Data.table_style)
+providersheet.write(x, y + 7, '占比', Data.table_style)
+providersheet.write(x, y + 8, '订单笔数', Data.table_style)
+providersheet.write(x, y + 9, '占比', Data.table_style)
+x += 1
+y = 0
+
+a = 1
+Functions.writeIn6(x, y, a, '米', Data.dldlSupplier, Data.dldlInfo, Data.dldlTotalPriceFrame, Data.dldlFrame,
+                   Data.dldlOrderQuantityFrame, providersheet, Data.table_style, Data.text_style, Data.percent_style)
+x += (len(Data.dldlSupplier) + 1)
+a += len(Data.dldlSupplier)
+
+Functions.writeIn6(x, y, a, '米', Data.kxSupplier, Data.kxInfo, Data.kxTotalPriceFrame, Data.kxFrame,
+                   Data.kxOrderQuantityFrame, providersheet, Data.table_style, Data.text_style, Data.percent_style)
+x += (len(Data.kxSupplier) + 1)
+a += len(Data.kxSupplier)
+
+Functions.writeIn6(x, y, a, '台', Data.ktSupplier, Data.ktInfo, Data.ktTotalPriceFrame, Data.ktFrame,
+                   Data.ktOrderQuantityFrame, providersheet, Data.table_style, Data.text_style, Data.percent_style)
+x += (len(Data.ktSupplier) + 1)
+a += len(Data.ktSupplier)
+
+Functions.writeIn6(x, y, a, '套', Data.dySupplier, Data.dyInfo, Data.dyTotalPriceFrame, Data.dyFrame,
+                   Data.dyOrderQuantityFrame, providersheet, Data.table_style, Data.text_style, Data.percent_style)
+x += (len(Data.dySupplier) + 1)
+a += len(Data.dySupplier)
+
+Functions.writeIn6(x, y, a, '个/套', Data.wjzSupplier, Data.wjzInfo, Data.wjzTotalPriceFrame, Data.wjzFrame,
+                   Data.wjzOrderQuantityFrame, providersheet, Data.table_style, Data.text_style, Data.percent_style)
+x += (len(Data.wjzSupplier) + 1)
+a += len(Data.wjzSupplier)
+
 
 wb.save(Data.resultFile_path)

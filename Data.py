@@ -8,8 +8,8 @@ import datetime
 end_data = datetime.datetime(2017, 7, 31, 23, 59, 59)
 #  路径前加r（原因：文件名中的 \U 开始的字符被编译器认为是八进制）
 #  保存输出数据的文档地址  Administrator
-# resultFile_path = r"C:\Users\Administrator\Desktop\数据结果.xls"
-resultFile_path = r"C:\Users\Zhang Yu\Desktop\数据结果.xls"
+resultFile_path = r"C:\Users\Administrator\Desktop\数据结果.xls"
+# resultFile_path = r"C:\Users\Zhang Yu\Desktop\数据结果.xls"
 
 config = {
     'host': '10.0.204.205',
@@ -27,7 +27,8 @@ province = ['北京', '天津', '河北', '山西', '内蒙', '辽宁', '吉林'
             '四川', '贵州', '云南', '西藏', '陕西', '甘肃', '青海', '宁夏', '新疆']
 
 # 电力电缆（简称dldl）
-dldlSqlStr = "select LEFT(o.province_name,2) '省分公司', p.real_nums '采购数量', " \
+dldlSqlStr = "select LEFT(o.province_name,2) '省分公司', p.real_nums '采购数量'," \
+             "round(round(p.real_nums * p.company_price,5),2) AS '价税合计', " \
              "CASE " \
              "WHEN p.provider_id = 49230 THEN '江苏中利' " \
              "WHEN p.provider_id = 49256 THEN '通鼎互联' " \
@@ -97,8 +98,16 @@ dldlBiddingFrame = pd.DataFrame(dldlBiddingData, columns=province, index=dldlSup
 dldlData = {}
 dldlFrame = pd.DataFrame(dldlData, columns=province, index=dldlSupplier)
 
+dldlTotalPrice = {}
+dldlTotalPriceFrame = pd.DataFrame(dldlTotalPrice, columns=province, index=dldlSupplier)
+
+dldlOrderQuantity = {}
+dldlOrderQuantityFrame = pd.DataFrame(dldlOrderQuantity, columns=province, index=dldlSupplier)
+
 # 馈线（简称kx）
-kxSqlStr = "select LEFT(o.province_name,2) '省分公司', p.real_nums '采购数量', LEFT(p.provider_name,4) '供应商'  " \
+kxSqlStr = "select LEFT(o.province_name,2) '省分公司', p.real_nums '采购数量', " \
+           "round(round(p.real_nums * p.company_price,5),2) AS '价税合计', " \
+           "LEFT(p.provider_name,4) '供应商'  " \
            "from eshop_order_product p " \
            "LEFT JOIN eshop_order o ON p.order_id = o.id " \
            "LEFT JOIN eshop_provideraddress epa ON epa.providerId = p.provider_id " \
@@ -159,8 +168,15 @@ kxBiddingFrame = pd.DataFrame(kxBiddingData, columns=province, index=kxSupplier)
 kxData = {}
 kxFrame = pd.DataFrame(kxData, columns=province, index=kxSupplier)
 
+kxTotalPrice = {}
+kxTotalPriceFrame = pd.DataFrame(kxTotalPrice, columns=province, index=kxSupplier)
+
+kxOrderQuantity = {}
+kxOrderQuantityFrame = pd.DataFrame(kxOrderQuantity, columns=province, index=kxSupplier)
+
 # 空调（简称kt）
 ktSqlStr = "select LEFT(o.province_name,2) '省分公司', p.real_nums '采购数量', " \
+           "round(round(p.real_nums * p.company_price,5),2) AS '价税合计', " \
            "CASE " \
            "WHEN p.provider_id = 49216 THEN '美的制冷' " \
            "WHEN p.provider_id = 49280 THEN '广东科龙' " \
@@ -236,19 +252,25 @@ ktBiddingFrame = pd.DataFrame(ktBiddingData, columns=province, index=ktSupplier)
 ktData = {}
 ktFrame = pd.DataFrame(ktData, columns=province, index=ktSupplier)
 
+ktTotalPrice = {}
+ktTotalPriceFrame = pd.DataFrame(ktTotalPrice, columns=province, index=ktSupplier)
+
+ktOrderQuantity = {}
+ktOrderQuantityFrame = pd.DataFrame(ktOrderQuantity, columns=province, index=ktSupplier)
+
 # 电源（简称dy）
+# It looks like python is interpreting the % as a printf-like format character. Try using %%?
 dySqlStr = "select LEFT(o.province_name,2) '省分公司', p.real_nums '采购数量', " \
+           "round(round(p.real_nums * p.company_price,5),2) AS '价税合计', " \
            "CASE " \
-           "WHEN p.provider_id = 49216 THEN '美的制冷' " \
-           "WHEN p.provider_id = 49280 THEN '广东科龙' " \
-           "WHEN p.provider_id = 49289 THEN '南京佳力图' " \
-           "WHEN p.provider_id = 49221 THEN '美的暖通' " \
-           "WHEN p.provider_id = 49218 THEN '广东海悟' " \
-           "WHEN p.provider_id = 49295 THEN '北京斯泰科' " \
-           "WHEN p.provider_id = 49212 THEN '艾特网能' " \
            "WHEN p.provider_id = 49220 THEN '艾默生网络' " \
-           "WHEN p.provider_id = 49258 THEN 'TCL空调' " \
-           "WHEN p.provider_id = 49279 THEN '海信空调' " \
+           "WHEN p.provider_id = 49291 THEN '珠江电信' " \
+           "WHEN p.provider_id = 49259 THEN '南京华脉' " \
+           "WHEN p.provider_id = 49213 THEN '中达电通' " \
+           "WHEN p.provider_id = 49223 THEN '东莞铭普' " \
+           "WHEN p.provider_id = 49229 THEN '北京动力源' " \
+           "WHEN p.provider_id = 28295 THEN '华为公司' " \
+           "WHEN p.provider_id = 49211 THEN '中兴公司' " \
            "END '供应商' " \
            "from eshop_order_product p " \
            "LEFT JOIN eshop_order o ON p.order_id = o.id " \
@@ -261,13 +283,13 @@ dySqlStr = "select LEFT(o.province_name,2) '省分公司', p.real_nums '采购�
            "AND g.shop_id = o.shop_id " \
            "AND o.shop_id = ' 596 ' " \
            "AND p.CONTACT_NUMBER = c.contact_number " \
-           "AND p.CONTACT_NUMBER IN ('CU12-1001-2016-000977', 'CU12-1001-2016-000981', 'CU12-1001-2016-000982', " \
-           "'CU12-1001-2016-000973', 'CU12-1001-2016-000978', 'CU12-1001-2016-000975', " \
-           "'CU12-1001-2016-000980', 'CU12-1001-2016-000969', 'CU12-1001-2016-000972', " \
-           "'CU12-1001-2016-000976', 'CU12-1001-2016-000983', 'CU12-1001-2016-000970', " \
-           "'CU12-1001-2016-000974', 'CU12-1001-2016-000979', 'CU12-1001-2016-000971') " \
-           "AND mac.name in ('节能减排类设备', '通信机房节能双循环空调') " \
-           "AND p.unit = '台'" \
+           "AND p.CONTACT_NUMBER IN ('CU12-1001-2016-000988','CU12-1001-2016-000995'," \
+           "'CU12-1001-2016-000990','CU12-1001-2016-000987','CU12-1001-2016-000992'," \
+           "'CU12-1001-2016-000989','CU12-1001-2016-000994','CU12-1001-2016-000998'," \
+           "'CU12-1001-2016-000993','CU12-1001-2016-000991','CU12-1001-2016-000996','CU12-1001-2016-000997') " \
+           "AND mac.name in ('组合开关电源', '室外一体化开关电源', '其他变流设备') " \
+           "AND p.unit = '套'" \
+           "AND p.Goods_name NOT LIKE '%%配件%%' " \
            "AND o.`status` in ('2','5') " \
            "AND o.create_time BETWEEN '2016-01-01' And '%s' " \
            "GROUP BY p.id " % end_data
@@ -311,6 +333,94 @@ dyBiddingFrame = pd.DataFrame(dyBiddingData, columns=province, index=dySupplier)
 
 dyData = {}
 dyFrame = pd.DataFrame(dyData, columns=province, index=dySupplier)
+
+dyTotalPrice = {}
+dyTotalPriceFrame = pd.DataFrame(dyTotalPrice, columns=province, index=dySupplier)
+
+dyOrderQuantity = {}
+dyOrderQuantityFrame = pd.DataFrame(dyOrderQuantity, columns=province, index=dySupplier)
+
+# 微基站（简称wjz）
+wjzSqlStr = "select LEFT(o.province_name,2) '省分公司', p.real_nums '采购数量', " \
+            "round(round(p.real_nums * p.company_price,5),2) AS '价税合计', " \
+            "CASE " \
+            "WHEN p.provider_id = 37708 THEN '爱立信公司' " \
+            "WHEN p.provider_id IN ('37771', '37715') THEN '上海贝尔' " \
+            "WHEN p.provider_id IN ('37623','37625') THEN '华为公司' " \
+            "WHEN p.provider_id IN ('37593','37626') THEN '中兴公司' " \
+            "END '供应商' " \
+            "from eshop_order_product p " \
+            "LEFT JOIN eshop_order o ON p.order_id = o.id " \
+            "LEFT JOIN eshop_provideraddress epa ON epa.providerId = p.provider_id " \
+            "LEFT JOIN eshop_provider_contact c ON c.provider_id = p.provider_id " \
+            "LEFT JOIN eshop_goods g ON g.item_all = p.ITEM_NUMBER " \
+            "LEFT JOIN eshop_materials_catergorytree mac ON mac.id =p.goodstype_id " \
+            "WHERE epa.shop_id = o.shop_id " \
+            "AND c.shop_id = o.shop_id " \
+            "AND g.shop_id = o.shop_id " \
+            "AND o.shop_id = ' 685 ' " \
+            "AND p.CONTACT_NUMBER = c.contact_number " \
+            "AND p.CONTACT_NUMBER IN ('CU12-1001-2016-000735','CU12-1001-2016-000729','CU12-1001-2016-000730'," \
+            "'CU12-1001-2016-000732','CU12-1001-2016-000736','CU12-1001-2016-000734'," \
+            "'CU12-1001-2016-000731','CU12-1001-2016-000733') " \
+            "AND mac.name in ('pPRRU') " \
+            "AND o.`status` in ('2','5') " \
+            "AND o.create_time BETWEEN '2016-01-01' And '%s' " \
+            "GROUP BY p.id " % end_data
+wjzInfo = "微基站（单位：个）"
+wjzSupplier = ['华为公司', '中兴公司', '爱立信公司', '上海贝尔']
+
+wjzTotalBiddingData = [8376, 6369, 4001, 570]
+
+wjzBiddingData = {'北京': [1128, 0, 778, 0],
+                  '天津': [48, 150, 0, 0],
+                  '河北': [48, 30, 0, 100],
+                  '山西': [2208, 1261, 450, 0],
+                  '内蒙': [432, 0, 0, 117],
+                  '辽宁': [48, 8, 0, 233],
+                  '吉林': [48, 195, 32, 0],
+                  '黑龙': [48, 20, 0, 13],
+                  '上海': [24, 0, 0, 50],
+                  '江苏': [48, 319, 32, 0],
+                  '浙江': [912, 830, 0, 0],
+                  '安徽': [48, 312, 0, 13],
+                  '福建': [48, 406, 0, 0],
+                  '江西': [24, 0, 0, 0],
+                  '山东': [336, 819, 250, 0],
+                  '河南': [1320, 465, 0, 0],
+                  '湖北': [48, 46, 490, 0],
+                  '湖南': [48, 400, 0, 10],
+                  '广东': [48, 35, 144, 0],
+                  '广西': [48, 0, 0, 7],
+                  '海南': [0, 14, 8, 0],
+                  '重庆': [432, 132, 0, 0],
+                  '四川': [144, 236, 1812, 10],
+                  '贵州': [312, 0, 0, 0],
+                  '云南': [48, 0, 5, 0],
+                  '西藏': [0, 0, 0, 0],
+                  '陕西': [48, 60, 0, 17],
+                  '甘肃': [48, 119, 0, 0],
+                  '青海': [24, 5, 0, 0],
+                  '宁夏': [48, 102, 0, 0],
+                  '新疆': [312, 405, 0, 0]}
+wjzBiddingFrame = pd.DataFrame(wjzBiddingData, columns=province, index=wjzSupplier)
+
+wjzData = {}
+wjzFrame = pd.DataFrame(wjzData, columns=province, index=wjzSupplier)
+
+wjzTotalPrice = {}
+wjzTotalPriceFrame = pd.DataFrame(wjzTotalPrice, columns=province, index=wjzSupplier)
+
+wjzOrderQuantity = {}
+wjzOrderQuantityFrame = pd.DataFrame(wjzOrderQuantity, columns=province, index=wjzSupplier)
+
+# 普通光缆（简称ptgl）
+ptglSqlStr = ""
+ptglInfo = "微基站（单位：个）"
+ptglSupplier = ['华为公司', '中兴公司', '爱立信公司', '上海贝尔']
+
+ptglTotalBiddingData = [8376, 6369, 4001, 570]
+
 
 #  格式
 #  表头格式
