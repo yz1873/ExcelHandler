@@ -16,26 +16,34 @@ connection = pymysql.connect(**Data.config)
 cursor = connection.cursor()
 # 执行sql语句
 
-cursor.execute(Data.dldlSqlStr)
-dldlresult = cursor.fetchall()
-Functions.countByRow(dldlresult, Data.dldlFrame, Data.dldlTotalPriceFrame, Data.dldlOrderQuantityFrame,
-                     Data.dldlSupplier)
+# cursor.execute(Data.dldlSqlStr)
+# dldlresult = cursor.fetchall()
+# Functions.countByRow(dldlresult, Data.dldlFrame, Data.dldlTotalPriceFrame, Data.dldlOrderQuantityFrame,
+#                      Data.dldlSupplier)
+#
+# cursor.execute(Data.kxSqlStr)
+# kxresult = cursor.fetchall()
+# Functions.countByRow(kxresult, Data.kxFrame, Data.kxTotalPriceFrame, Data.kxOrderQuantityFrame, Data.kxSupplier)
+#
+# cursor.execute(Data.ktSqlStr)
+# ktresult = cursor.fetchall()
+# Functions.countByRow(ktresult, Data.ktFrame, Data.ktTotalPriceFrame, Data.ktOrderQuantityFrame, Data.ktSupplier)
+#
+# cursor.execute(Data.dySqlStr)
+# dyresult = cursor.fetchall()
+# Functions.countByRow(dyresult, Data.dyFrame, Data.dyTotalPriceFrame, Data.dyOrderQuantityFrame, Data.dySupplier)
+#
+# cursor.execute(Data.wjzSqlStr)
+# wjzresult = cursor.fetchall()
+# Functions.countByRow(wjzresult, Data.wjzFrame, Data.wjzTotalPriceFrame, Data.wjzOrderQuantityFrame, Data.wjzSupplier)
 
-cursor.execute(Data.kxSqlStr)
-kxresult = cursor.fetchall()
-Functions.countByRow(kxresult, Data.kxFrame, Data.kxTotalPriceFrame, Data.kxOrderQuantityFrame, Data.kxSupplier)
+cursor.execute(Data.ptglSqlStr)
+ptglresult = cursor.fetchall()
+Functions.glCountByRow(ptglresult, Data.ptglTotalPriceData, Data.ptglOrderQuanityData, Data.ptglSupplier)
 
-cursor.execute(Data.ktSqlStr)
-ktresult = cursor.fetchall()
-Functions.countByRow(ktresult, Data.ktFrame, Data.ktTotalPriceFrame, Data.ktOrderQuantityFrame, Data.ktSupplier)
-
-cursor.execute(Data.dySqlStr)
-dyresult = cursor.fetchall()
-Functions.countByRow(dyresult, Data.dyFrame, Data.dyTotalPriceFrame, Data.dyOrderQuantityFrame, Data.dySupplier)
-
-cursor.execute(Data.wjzSqlStr)
-wjzresult = cursor.fetchall()
-Functions.countByRow(wjzresult, Data.wjzFrame, Data.wjzTotalPriceFrame, Data.wjzOrderQuantityFrame, Data.wjzSupplier)
+cursor.execute(Data.dzglSqlStr)
+dzglresult = cursor.fetchall()
+Functions.glCountByRow(dzglresult, Data.dzglTotalPriceData, Data.dzglOrderQuanityData, Data.dzglSupplier)
 
 connection.close()
 
@@ -92,7 +100,15 @@ x += (len(Data.dySupplier) + 1)
 
 Functions.writeByGoods(x, y, Data.wjzSupplier, Data.wjzInfo, Data.wjzTotalBiddingData, Data.wjzBiddingFrame,
                        Data.wjzFrame, newsheet, Data.table_style, Data.text_style, Data.percent_style)
-x += (len(Data.dySupplier) + 1)
+x += (len(Data.wjzSupplier) + 1)
+
+Functions.writeByGoodsPrice(x, y, Data.ptglSupplier, Data.ptglInfo, Data.ptglTotalBiddingData, Data.ptglTotalPriceData,
+                            Data.ptglTotalPrice, newsheet, Data.table_style, Data.text_style, Data.percent_style)
+x += (len(Data.ptglSupplier) + 1)
+
+Functions.writeByGoodsPrice(x, y, Data.dzglSupplier, Data.dzglInfo, Data.dzglTotalBiddingData, Data.dzglTotalPriceData,
+                            Data.dzglTotalPrice, newsheet, Data.table_style, Data.text_style, Data.percent_style)
+x += (len(Data.ptglSupplier) + 1)
 
 # EXCEL  providersheet 输出
 #  扩大1到100列的宽度

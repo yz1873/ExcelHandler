@@ -66,23 +66,23 @@ def writeByGoods(x, y, GoodsSupplier, GoodsInfo, GoodsTotalBiddingData, GoodsBid
                                                     totalCountByProvince(m, GoodsBiddingFrame))), percent_style)
 
 
-def writeByGoodsPrice(x, y, GoodsSupplier, GoodsInfo, GoodsTotalBiddingData, GoodsSellData, currentsheet, table_style,
-                      text_style, percent_style):
+def writeByGoodsPrice(x, y, GoodsSupplier, GoodsInfo, GoodsTotalBiddingData, GoodsSellData, totalCountData,
+                      currentsheet, table_style, text_style, percent_style):
     currentsheet.write_merge(x, x + len(GoodsSupplier), y, y, GoodsInfo, table_style)
     for n in range(0, len(GoodsSupplier)):
         currentsheet.write(x + n, y + 1, GoodsSupplier[n], table_style)
-        currentsheet.write(x + n, y + 2, GoodsTotalBiddingData[n], text_style)
-        currentsheet.write(x + n, y + 3, xlwt.Formula('C' + str(x + n + 1) + '/C' + str(x + len(GoodsSupplier) + 1)),
-                           percent_style)
-        currentsheet.write(x + n, y + 4, n + 1, text_style)
+        currentsheet.write(x + n, y + 2, xlwt.Formula('D' + str(x + n + 1) + '*C' + str(x + len(GoodsSupplier) + 1)),
+                           text_style)
+        currentsheet.write(x + n, y + 3, GoodsTotalBiddingData[n], percent_style)
+        currentsheet.write(x + n, y + 4, '', text_style)
         currentsheet.write(x + n, y + 5, GoodsSellData[n], text_style)
         currentsheet.write(x + n, y + 6, xlwt.Formula('F' + str(x + n + 1) + '/C' + str(x + len(GoodsSupplier) + 1)),
                            percent_style)
     x += len(GoodsSupplier)
     currentsheet.write(x, y + 1, '%d家合计' % len(GoodsSupplier), table_style)
-    currentsheet.write(x, y + 2, totalCount(GoodsTotalBiddingData), text_style)
+    currentsheet.write(x, y + 2, totalCountData, text_style)
     currentsheet.write(x, y + 3, 1, percent_style)
-    currentsheet.write(x, y + 4, '---', table_style)
+    currentsheet.write(x, y + 4, '', table_style)
     currentsheet.write(x, y + 5, totalCount(GoodsSellData), text_style)
     currentsheet.write(x, y + 6, xlwt.Formula('F' + str(x + 1) + '/C' + str(x + 1)), percent_style)
 
@@ -103,6 +103,12 @@ def countByRow(result, dataframe, totalpriceframe, quantityframe, supplier):
             quantityframe.iloc[supplier.index(row['供应商']), Data.province.index(row['省分公司'])] = 1
         else:
             quantityframe.iloc[supplier.index(row['供应商']), Data.province.index(row['省分公司'])] += 1
+
+
+def glCountByRow(result, pricedata, quantitydata, supplier):
+    for row in result:
+        pricedata[supplier.index(row['供应商'])] = row['价税合计']
+        quantitydata[supplier.index(row['供应商'])] = row['订单数']
 
 
 def writeIn6(x, y, a, unit, GoodsSupplier, GoodsInfo, totalpriceframe, goodsframe, orderquantityframe, currentsheet,
