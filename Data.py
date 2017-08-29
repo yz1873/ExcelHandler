@@ -519,6 +519,7 @@ dzglTotalBiddingData = [0.1980, 0.1580, 0.1270, 0.1140, 0.1030, 0.0460, 0.0420, 
                         0.0220, 0.0200, 0.0170]
 dzglTotalPrice = 380000000
 
+
 #  格式
 #  表头格式
 header_style = xlwt.easyxf('font: name 微软雅黑, height 220, bold on;')

@@ -7,6 +7,7 @@ import pymysql.cursors
 wb = xlwt.Workbook(encoding='utf-8', style_compression=0)
 # 创建newsheet 第二参数用于确认同一个cell单元是否可以重设值。
 newsheet = wb.add_sheet('分省分供应商数据', cell_overwrite_ok=True)
+overallsheet = wb.add_sheet('1整体情况', cell_overwrite_ok=True)
 providersheet = wb.add_sheet('6供应商数量', cell_overwrite_ok=True)
 provincesheet = wb.add_sheet('9分省评价', cell_overwrite_ok=True)
 
@@ -16,26 +17,26 @@ connection = pymysql.connect(**Data.config)
 cursor = connection.cursor()
 # 执行sql语句
 
-# cursor.execute(Data.dldlSqlStr)
-# dldlresult = cursor.fetchall()
-# Functions.countByRow(dldlresult, Data.dldlFrame, Data.dldlTotalPriceFrame, Data.dldlOrderQuantityFrame,
-#                      Data.dldlSupplier)
-#
-# cursor.execute(Data.kxSqlStr)
-# kxresult = cursor.fetchall()
-# Functions.countByRow(kxresult, Data.kxFrame, Data.kxTotalPriceFrame, Data.kxOrderQuantityFrame, Data.kxSupplier)
-#
-# cursor.execute(Data.ktSqlStr)
-# ktresult = cursor.fetchall()
-# Functions.countByRow(ktresult, Data.ktFrame, Data.ktTotalPriceFrame, Data.ktOrderQuantityFrame, Data.ktSupplier)
-#
-# cursor.execute(Data.dySqlStr)
-# dyresult = cursor.fetchall()
-# Functions.countByRow(dyresult, Data.dyFrame, Data.dyTotalPriceFrame, Data.dyOrderQuantityFrame, Data.dySupplier)
-#
-# cursor.execute(Data.wjzSqlStr)
-# wjzresult = cursor.fetchall()
-# Functions.countByRow(wjzresult, Data.wjzFrame, Data.wjzTotalPriceFrame, Data.wjzOrderQuantityFrame, Data.wjzSupplier)
+cursor.execute(Data.dldlSqlStr)
+dldlresult = cursor.fetchall()
+Functions.countByRow(dldlresult, Data.dldlFrame, Data.dldlTotalPriceFrame, Data.dldlOrderQuantityFrame,
+                     Data.dldlSupplier)
+
+cursor.execute(Data.kxSqlStr)
+kxresult = cursor.fetchall()
+Functions.countByRow(kxresult, Data.kxFrame, Data.kxTotalPriceFrame, Data.kxOrderQuantityFrame, Data.kxSupplier)
+
+cursor.execute(Data.ktSqlStr)
+ktresult = cursor.fetchall()
+Functions.countByRow(ktresult, Data.ktFrame, Data.ktTotalPriceFrame, Data.ktOrderQuantityFrame, Data.ktSupplier)
+
+cursor.execute(Data.dySqlStr)
+dyresult = cursor.fetchall()
+Functions.countByRow(dyresult, Data.dyFrame, Data.dyTotalPriceFrame, Data.dyOrderQuantityFrame, Data.dySupplier)
+
+cursor.execute(Data.wjzSqlStr)
+wjzresult = cursor.fetchall()
+Functions.countByRow(wjzresult, Data.wjzFrame, Data.wjzTotalPriceFrame, Data.wjzOrderQuantityFrame, Data.wjzSupplier)
 
 cursor.execute(Data.ptglSqlStr)
 ptglresult = cursor.fetchall()
@@ -250,3 +251,4 @@ provincesheet.write(x, y + 19, xlwt.Formula('SUM(T3:T33)'), Data.text_style)
 provincesheet.write(x, y + 20, xlwt.Formula('SUM(U3:U33)'), Data.text_style)
 
 wb.save(Data.resultFile_path)
+
