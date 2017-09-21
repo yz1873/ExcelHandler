@@ -7,7 +7,6 @@ import pymysql.cursors
 wb = xlwt.Workbook(encoding='utf-8', style_compression=0)
 # 创建newsheet 第二参数用于确认同一个cell单元是否可以重设值。
 newsheet = wb.add_sheet('分省分供应商数据', cell_overwrite_ok=True)
-overallsheet = wb.add_sheet('1整体情况', cell_overwrite_ok=True)
 providersheet = wb.add_sheet('6供应商数量', cell_overwrite_ok=True)
 provincesheet = wb.add_sheet('9分省评价', cell_overwrite_ok=True)
 

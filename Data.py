@@ -8,8 +8,8 @@ import datetime
 end_data = datetime.datetime(2017, 8, 31, 23, 59, 59)
 #  路径前加r（原因：文件名中的 \U 开始的字符被编译器认为是八进制）
 #  保存输出数据的文档地址  Administrator
-resultFile_path = r"C:\Users\Administrator\Desktop\数据结果.xls"
-# resultFile_path = r"C:\Users\Zhang Yu\Desktop\数据结果.xls"
+# resultFile_path = r"C:\Users\Administrator\Desktop\数据结果.xls"
+resultFile_path = r"C:\Users\Zhang Yu\Desktop\数据结果.xls"
 
 config = {
     'host': '10.0.204.205',
@@ -46,14 +46,7 @@ dldlSqlStr = "select LEFT(o.province_name,2) '省分公司', p.real_nums '采购
              "END '供应商' " \
              "from eshop_order_product p " \
              "LEFT JOIN eshop_order o ON p.order_id = o.id " \
-             "LEFT JOIN eshop_provideraddress epa ON epa.providerId = p.provider_id " \
-             "LEFT JOIN eshop_provider_contact c ON c.provider_id = p.provider_id " \
-             "LEFT JOIN eshop_goods g ON g.item_all = p.ITEM_NUMBER " \
-             "WHERE epa.shop_id = o.shop_id " \
-             "AND c.shop_id = o.shop_id " \
-             "AND g.shop_id = o.shop_id " \
-             "AND o.shop_id = ' 596 ' " \
-             "AND p.CONTACT_NUMBER = c.contact_number " \
+             "WHERE o.shop_id = ' 596 ' " \
              "AND p.CONTACT_NUMBER IN ('CU12-1001-2016-001073','CU12-1001-2016-001074'," \
              "'CU12-1001-2016-001075','CU12-1001-2016-001076','CU12-1001-2016-001077'," \
              "'CU12-1001-2016-001078','CU12-1001-2016-001079','CU12-1001-2016-001080','CU12-1001-2016-001081') " \
@@ -83,7 +76,7 @@ dldlBiddingData = {'北京': [36114, 34743, 34623, 0, 0, 33440, 32480, 0, 0],
                    '山东': [432123, 415888, 414431, 413390, 405688, 0, 0, 0, 0],
                    '河南': [64111, 61677, 61467, 0, 0, 0, 0, 57319, 55996],
                    '湖北': [17428, 16767, 16710, 0, 0, 0, 0, 15582, 15223],
-                   '湖南': [46070, 44523, 44303, 0, 0, 0, 0, 59964, 58580],
+                   '湖南': [46070, 44523, 44303, 0, 0, 0, 0, 40964, 58580],
                    '广东': [47770, 45754, 45666, 0, 0, 0, 0, 23934, 23382],
                    '广西': [13651, 13133, 13088, 0, 0, 0, 0, 12205, 11923],
                    '海南': [13574, 13058, 13014, 0, 0, 0, 0, 12135, 11855],
