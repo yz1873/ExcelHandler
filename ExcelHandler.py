@@ -16,34 +16,43 @@ connection = pymysql.connect(**Data.config)
 cursor = connection.cursor()
 # 执行sql语句
 
-cursor.execute(Data.dldlSqlStr)
-dldlresult = cursor.fetchall()
-Functions.countByRow(dldlresult, Data.dldlFrame, Data.dldlTotalPriceFrame, Data.dldlOrderQuantityFrame,
-                     Data.dldlSupplier)
+# cursor.execute(Data.dldlSqlStr)
+# dldlresult = cursor.fetchall()
+# Functions.countByRow(dldlresult, Data.dldlFrame, Data.dldlTotalPriceFrame, Data.dldlOrderQuantityFrame,
+#                      Data.dldlSupplier)
+#
+# cursor.execute(Data.kxSqlStr)
+# kxresult = cursor.fetchall()
+# Functions.countByRow(kxresult, Data.kxFrame, Data.kxTotalPriceFrame, Data.kxOrderQuantityFrame, Data.kxSupplier)
+#
+# cursor.execute(Data.ktSqlStr)
+# ktresult = cursor.fetchall()
+# Functions.countByRow(ktresult, Data.ktFrame, Data.ktTotalPriceFrame, Data.ktOrderQuantityFrame, Data.ktSupplier)
+#
+# cursor.execute(Data.dySqlStr)
+# dyresult = cursor.fetchall()
+# Functions.countByRow(dyresult, Data.dyFrame, Data.dyTotalPriceFrame, Data.dyOrderQuantityFrame, Data.dySupplier)
+#
+# cursor.execute(Data.wjzSqlStr)
+# wjzresult = cursor.fetchall()
+# Functions.countByRow(wjzresult, Data.wjzFrame, Data.wjzTotalPriceFrame, Data.wjzOrderQuantityFrame, Data.wjzSupplier)
 
-cursor.execute(Data.kxSqlStr)
-kxresult = cursor.fetchall()
-Functions.countByRow(kxresult, Data.kxFrame, Data.kxTotalPriceFrame, Data.kxOrderQuantityFrame, Data.kxSupplier)
-
-cursor.execute(Data.ktSqlStr)
-ktresult = cursor.fetchall()
-Functions.countByRow(ktresult, Data.ktFrame, Data.ktTotalPriceFrame, Data.ktOrderQuantityFrame, Data.ktSupplier)
-
-cursor.execute(Data.dySqlStr)
-dyresult = cursor.fetchall()
-Functions.countByRow(dyresult, Data.dyFrame, Data.dyTotalPriceFrame, Data.dyOrderQuantityFrame, Data.dySupplier)
-
-cursor.execute(Data.wjzSqlStr)
-wjzresult = cursor.fetchall()
-Functions.countByRow(wjzresult, Data.wjzFrame, Data.wjzTotalPriceFrame, Data.wjzOrderQuantityFrame, Data.wjzSupplier)
 
 cursor.execute(Data.ptglSqlStr)
 ptglresult = cursor.fetchall()
-Functions.glCountByRow(ptglresult, Data.ptglTotalPriceData, Data.ptglOrderQuanityData, Data.ptglSupplier)
+Functions.glCountByRow(ptglresult, Data.ptglTotalPriceFrame, Data.ptglSupplier)
+
+cursor.execute(Data.ptgl96SqlStr)
+ptgl96result = cursor.fetchall()
+Functions.glCountByRow(ptgl96result, Data.ptgl96TotalPriceFrame, Data.ptglSupplier)
 
 cursor.execute(Data.dzglSqlStr)
 dzglresult = cursor.fetchall()
-Functions.glCountByRow(dzglresult, Data.dzglTotalPriceData, Data.dzglOrderQuanityData, Data.dzglSupplier)
+Functions.glCountByRow(dzglresult, Data.dzglTotalPriceFrame, Data.dzglSupplier)
+
+cursor.execute(Data.dzgl96SqlStr)
+dzgl96result = cursor.fetchall()
+Functions.glCountByRow(dzgl96result, Data.dzgl96TotalPriceFrame, Data.dzglSupplier)
 
 connection.close()
 
@@ -67,7 +76,7 @@ for n in range(0, 31):
     newsheet.write_merge(x, x, y + 3 * n, y + 3 * n + 2, Data.province[n], Data.table_style)
 x += 1
 y = 0
-newsheet.col(x).height = 256 * 20
+newsheet.col(x).height = 256 * 30
 newsheet.write(x, y + 0, '设备类型', Data.table_style)
 newsheet.write(x, y + 1, '供应商', Data.table_style)
 newsheet.write(x, y + 2, '合计中标份额', Data.table_style)
@@ -77,9 +86,9 @@ newsheet.write(x, y + 5, '本期主材数量', Data.table_style)
 newsheet.write(x, y + 6, '本期主材数量/C列合计中标份额*100%', Data.table_style)
 y += 7
 for n in range(0, 31):
-    newsheet.write(x, y + 3 * n, '其中：中标份额', Data.table_style)
-    newsheet.write(x, y + 3 * n + 1, '本期主材数量', Data.table_style)
-    newsheet.write(x, y + 3 * n + 2, '分省完成率=本省本期主材数量/本省中标份额*100%', Data.table_style)
+    newsheet.write(x, y + 3 * n + 1, '其中：中标份额 (光缆为小于96芯下单额)', Data.table_style)
+    newsheet.write(x, y + 3 * n, '本期主材数量', Data.table_style)
+    newsheet.write(x, y + 3 * n + 2, '分省完成率=本省本期主材数量/本省中标份额*100% (光缆为大于等于96芯下单额)', Data.table_style)
 x += 1
 y = 0
 Functions.writeByGoods(x, y, Data.dldlSupplier, Data.dldlInfo, Data.dldlTotalBiddingData, Data.dldlBiddingFrame,
@@ -102,12 +111,16 @@ Functions.writeByGoods(x, y, Data.wjzSupplier, Data.wjzInfo, Data.wjzTotalBiddin
                        Data.wjzFrame, newsheet, Data.table_style, Data.text_style, Data.percent_style)
 x += (len(Data.wjzSupplier) + 1)
 
-Functions.writeByGoodsPrice(x, y, Data.ptglSupplier, Data.ptglInfo, Data.ptglTotalBiddingData, Data.ptglTotalPriceData,
-                            Data.ptglTotalPrice, newsheet, Data.table_style, Data.text_style, Data.percent_style)
+# 光缆excel输出
+
+Functions.writeByGoodsPrice(x, y, Data.ptglSupplier, Data.ptglInfo, Data.ptglTotalBiddingData, Data.ptglTotalPriceFrame,
+                            Data.ptgl96TotalPriceFrame, Data.ptglTotalPrice, newsheet, Data.table_style,
+                            Data.text_style, Data.percent_style)
 x += (len(Data.ptglSupplier) + 1)
 
-Functions.writeByGoodsPrice(x, y, Data.dzglSupplier, Data.dzglInfo, Data.dzglTotalBiddingData, Data.dzglTotalPriceData,
-                            Data.dzglTotalPrice, newsheet, Data.table_style, Data.text_style, Data.percent_style)
+Functions.writeByGoodsPrice(x, y, Data.dzglSupplier, Data.dzglInfo, Data.dzglTotalBiddingData, Data.dzglTotalPriceFrame,
+                            Data.dzgl96TotalPriceFrame, Data.dzglTotalPrice, newsheet, Data.table_style,
+                            Data.text_style, Data.percent_style)
 x += (len(Data.ptglSupplier) + 1)
 
 # EXCEL  providersheet 输出
@@ -173,7 +186,7 @@ providersheet.write_merge(x, x, y + 0, y + 4, '表二：按供应商统计', Dat
 x += 1
 providersheet.write_merge(x, x + 1, y, y, '序号', Data.table_style)
 providersheet.write_merge(x, x + 1, y + 1, y + 1, '供应商', Data.table_style)
-providersheet.write_merge(x, x, y + 2, y + 4, '截止7月31日统计结果', Data.table_style)
+providersheet.write_merge(x, x, y + 2, y + 4, '截止%s' % Data.end_data + '统计结果', Data.table_style)
 providersheet.write(x + 1, y + 2, '累计订单金额', Data.table_style)
 providersheet.write(x + 1, y + 3, '占比', Data.table_style)
 providersheet.write(x + 1, y + 4, '下单省分个数', Data.table_style)
@@ -250,4 +263,3 @@ provincesheet.write(x, y + 19, xlwt.Formula('SUM(T3:T33)'), Data.text_style)
 provincesheet.write(x, y + 20, xlwt.Formula('SUM(U3:U33)'), Data.text_style)
 
 wb.save(Data.resultFile_path)
-

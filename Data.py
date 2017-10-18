@@ -5,7 +5,7 @@ import datetime
 
 # 截至日
 # end_data = datetime.date(2017, 7, 31)
-end_data = datetime.datetime(2017, 8, 31, 23, 59, 59)
+end_data = datetime.datetime(2017, 9, 30, 23, 59, 59)
 #  路径前加r（原因：文件名中的 \U 开始的字符被编译器认为是八进制）
 #  保存输出数据的文档地址  Administrator
 # resultFile_path = r"C:\Users\Administrator\Desktop\数据结果.xls"
@@ -411,7 +411,8 @@ wjzOrderQuantity = {}
 wjzOrderQuantityFrame = pd.DataFrame(wjzOrderQuantity, columns=province, index=wjzSupplier)
 
 # 普通光缆（简称ptgl）
-ptglSqlStr = "select " \
+ptglSqlStr = "select LEFT(o.province_name,2) '省分公司', p.real_nums '采购数量', " \
+             "round(round(p.real_nums * p.company_price,5),2) AS '价税合计', " \
              "CASE " \
              "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000433' THEN '中联光'" \
              "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000446' THEN '吴江飞乐' " \
@@ -438,15 +439,10 @@ ptglSqlStr = "select " \
              "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000430' THEN '通鼎互联' " \
              "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000426' THEN '长飞光纤' " \
              "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000439' THEN '鲁能泰山' " \
-             "END '供应商', " \
-             "COUNT(DISTINCT o.order_no) '订单数'," \
-             "SUM(round(round(p.real_nums * p.company_price,5),2)) AS '价税合计' " \
+             "END '供应商' " \
              "from eshop_order_product p " \
              "LEFT JOIN eshop_order o ON p.order_id = o.id " \
-             "LEFT JOIN eshop_provider_contact c ON c.provider_id = p.provider_id " \
-             "WHERE c.shop_id = o.shop_id " \
-             "AND o.shop_id = ' 596 ' " \
-             "AND p.CONTACT_NUMBER = c.contact_number " \
+             "WHERE o.shop_id = ' 596 ' " \
              "AND p.CONTACT_NUMBER IN ('CU12-1001-2017-000425','CU12-1001-2017-000426'," \
              "'CU12-1001-2017-000427','CU12-1001-2017-000428','CU12-1001-2017-000429'," \
              "'CU12-1001-2017-000430','CU12-1001-2017-000449','CU12-1001-2017-000431'," \
@@ -458,19 +454,71 @@ ptglSqlStr = "select " \
              "'CU12-1001-2017-000447','CU12-1001-2017-000448') " \
              "AND o.`status` in ('2','5') " \
              "AND o.create_time BETWEEN '2017-01-01' And '%s' " \
-             "GROUP BY p.provider_name " % end_data
+             "GROUP BY p.id  " % end_data
 ptglInfo = "普通光缆（单位：元）"
 ptglSupplier = ['江苏亨通', '长飞光纤', '烽火通信', '江苏中天', '江苏中利', '通鼎互联', '杭州富通', '普天法尔胜', '西安西古', '中联光', '江苏俊知', '苏州胜信', '浙江富春江',
                 '江苏永鼎', '普天线缆', '江苏南方', '鲁能泰山', '天津鑫茂', '深圳特发', '江苏科信', '安徽器材', '汕头奥星', '吴江飞乐', '湖南神通', '江苏万华']
-ptglOrderQuanityData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-ptglTotalPriceData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+ptglTotalPriceData = {}
+ptglTotalPriceFrame = pd.DataFrame(ptglTotalPriceData, columns=province, index=ptglSupplier)
 ptglTotalBiddingData = [0.1460, 0.1170, 0.0930, 0.0840, 0.0760, 0.0680, 0.0610, 0.0550, 0.0360, 0.0320, 0.0290, 0.0260,
                         0.0240, 0.0210, 0.0190, 0.0170, 0.0160, 0.0140, 0.0130, 0.0120, 0.0110, 0.0090, 0.0080, 0.0070,
                         0.0060]
 ptglTotalPrice = 4960000000
 
+# 96芯统计
+ptgl96SqlStr = "select LEFT(o.province_name,2) '省分公司', p.real_nums '采购数量', " \
+               "round(round(p.real_nums * p.company_price,5),2) AS '价税合计', " \
+               "CASE " \
+               "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000433' THEN '中联光'" \
+               "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000446' THEN '吴江飞乐' " \
+               "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000440' THEN '天津鑫茂' " \
+               "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000444' THEN '安徽器材' " \
+               "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000431' THEN '普天法尔胜' " \
+               "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000438' THEN '普天线缆' " \
+               "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000449' THEN '杭州富通' " \
+               "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000445' THEN '汕头奥星' " \
+               "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000448' THEN '江苏万华' " \
+               "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000429' THEN '江苏中利' " \
+               "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000428' THEN '江苏中天' " \
+               "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000425' THEN '江苏亨通' " \
+               "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000434' THEN '江苏俊知' " \
+               "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000441' THEN '江苏南方' " \
+               "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000437' THEN '江苏永鼎' " \
+               "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000443' THEN '江苏科信' " \
+               "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000436' THEN '浙江富春江' " \
+               "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000442' THEN '深圳特发' " \
+               "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000447' THEN '湖南神通' " \
+               "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000427' THEN '烽火通信' " \
+               "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000435' THEN '苏州胜信' " \
+               "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000432' THEN '西安西古' " \
+               "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000430' THEN '通鼎互联' " \
+               "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000426' THEN '长飞光纤' " \
+               "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000439' THEN '鲁能泰山' " \
+               "END '供应商' " \
+               "from eshop_order_product p " \
+               "LEFT JOIN eshop_order o ON p.order_id = o.id " \
+               "LEFT JOIN eshop_products pro ON pro.id = p.product_id " \
+               "WHERE o.shop_id = ' 596 ' " \
+               "AND p.CONTACT_NUMBER IN ('CU12-1001-2017-000425','CU12-1001-2017-000426'," \
+               "'CU12-1001-2017-000427','CU12-1001-2017-000428','CU12-1001-2017-000429'," \
+               "'CU12-1001-2017-000430','CU12-1001-2017-000449','CU12-1001-2017-000431'," \
+               "'CU12-1001-2017-000432','CU12-1001-2017-000433','CU12-1001-2017-000434'," \
+               "'CU12-1001-2017-000435','CU12-1001-2017-000436','CU12-1001-2017-000437'," \
+               "'CU12-1001-2017-000438','CU12-1001-2017-000441','CU12-1001-2017-000439'," \
+               "'CU12-1001-2017-000440','CU12-1001-2017-000442','CU12-1001-2017-000443'," \
+               "'CU12-1001-2017-000444','CU12-1001-2017-000445','CU12-1001-2017-000446'," \
+               "'CU12-1001-2017-000447','CU12-1001-2017-000448') " \
+               "AND o.`status` in ('2','5') " \
+               "AND o.create_time BETWEEN '2017-01-01' And '%s' " \
+               "AND substring(pro.products_no ,- 4) >= 96 " \
+               "GROUP BY p.id  " % end_data
+
+ptgl96TotalPriceData = {}
+ptgl96TotalPriceFrame = pd.DataFrame(ptgl96TotalPriceData, columns=province, index=ptglSupplier)
+
 # 带状光缆（简称dzgl）
-dzglSqlStr = "select " \
+dzglSqlStr = "select LEFT(o.province_name,2) '省分公司', p.real_nums '采购数量', " \
+             "round(round(p.real_nums * p.company_price,5),2) AS '价税合计', " \
              "CASE " \
              "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000461' THEN '宏安集团'" \
              "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000457' THEN '普天法尔胜' " \
@@ -487,31 +535,60 @@ dzglSqlStr = "select " \
              "WHEN p.CONTACT_NUMBER = 'CU11-1001-2017-000034' THEN '西安西古' " \
              "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000455' THEN '通鼎互联' " \
              "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000450' THEN '长飞光纤' " \
-             "END '供应商', " \
-             "COUNT(DISTINCT o.order_no) '订单数'," \
-             "SUM(round(round(p.real_nums * p.company_price,5),2)) AS '价税合计' " \
+             "END '供应商' " \
              "from eshop_order_product p " \
              "LEFT JOIN eshop_order o ON p.order_id = o.id " \
-             "LEFT JOIN eshop_provider_contact c ON c.provider_id = p.provider_id " \
-             "WHERE c.shop_id = o.shop_id " \
-             "AND o.shop_id = ' 596 ' " \
-             "AND p.CONTACT_NUMBER = c.contact_number " \
+             "WHERE o.shop_id = ' 596 ' " \
              "AND p.CONTACT_NUMBER IN ('CU12-1001-2017-000450','CU12-1001-2017-000451','CU12-1001-2017-000452'," \
              "'CU12-1001-2017-000453','CU12-1001-2017-000454','CU12-1001-2017-000455','CU12-1001-2017-000456'," \
              "'CU11-1001-2017-000034','CU12-1001-2017-000457','CU12-1001-2017-000458','CU12-1001-2017-000460'," \
              "'CU12-1001-2017-000462','CU12-1001-2017-000461','CU12-1001-2017-000463') " \
              "AND o.`status` in ('2','5') " \
              "AND o.create_time BETWEEN '2017-01-01' And '%s' " \
-             "GROUP BY p.provider_name " % end_data
+             "GROUP BY p.id " % end_data
 dzglInfo = "带状光缆（单位：元）"
 dzglSupplier = ['长飞光纤', '江苏亨通', '烽火通信', '江苏中天', '杭州富通', '通鼎互联', '江苏中利', '西安西古', '普天法尔胜', '江苏南方', '深圳特发', '汕头奥星', '普天线缆',
                 '宏安集团', '江苏永鼎']
-dzglOrderQuanityData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-dzglTotalPriceData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+dzglTotalPriceData = {}
+dzglTotalPriceFrame = pd.DataFrame(dzglTotalPriceData, columns=province, index=dzglSupplier)
 dzglTotalBiddingData = [0.1980, 0.1580, 0.1270, 0.1140, 0.1030, 0.0460, 0.0420, 0.0370, 0.0340, 0.0300, 0.0270, 0.0250,
                         0.0220, 0.0200, 0.0170]
 dzglTotalPrice = 380000000
 
+# 96芯
+dzgl96SqlStr = "select LEFT(o.province_name,2) '省分公司', p.real_nums '采购数量', " \
+             "round(round(p.real_nums * p.company_price,5),2) AS '价税合计', " \
+             "CASE " \
+             "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000461' THEN '宏安集团'" \
+             "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000457' THEN '普天法尔胜' " \
+             "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000462' THEN '普天线缆' " \
+             "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000454' THEN '杭州富通' " \
+             "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000460' THEN '汕头奥星' " \
+             "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000456' THEN '江苏中利' " \
+             "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000453' THEN '江苏中天' " \
+             "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000451' THEN '江苏亨通' " \
+             "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000458' THEN '江苏南方' " \
+             "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000463' THEN '江苏永鼎' " \
+             "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000459' THEN '深圳特发' " \
+             "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000452' THEN '烽火通信' " \
+             "WHEN p.CONTACT_NUMBER = 'CU11-1001-2017-000034' THEN '西安西古' " \
+             "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000455' THEN '通鼎互联' " \
+             "WHEN p.CONTACT_NUMBER = 'CU12-1001-2017-000450' THEN '长飞光纤' " \
+             "END '供应商' " \
+             "from eshop_order_product p " \
+             "LEFT JOIN eshop_order o ON p.order_id = o.id " \
+             "LEFT JOIN eshop_products pro ON pro.id = p.product_id " \
+             "WHERE o.shop_id = ' 596 ' " \
+             "AND p.CONTACT_NUMBER IN ('CU12-1001-2017-000450','CU12-1001-2017-000451','CU12-1001-2017-000452'," \
+             "'CU12-1001-2017-000453','CU12-1001-2017-000454','CU12-1001-2017-000455','CU12-1001-2017-000456'," \
+             "'CU11-1001-2017-000034','CU12-1001-2017-000457','CU12-1001-2017-000458','CU12-1001-2017-000460'," \
+             "'CU12-1001-2017-000462','CU12-1001-2017-000461','CU12-1001-2017-000463') " \
+             "AND o.`status` in ('2','5') " \
+             "AND o.create_time BETWEEN '2017-01-01' And '%s' " \
+             "AND substring(pro.products_no ,- 4) >= 96 " \
+             "GROUP BY p.id " % end_data
+dzgl96TotalPriceData = {}
+dzgl96TotalPriceFrame = pd.DataFrame(ptgl96TotalPriceData, columns=province, index=ptglSupplier)
 
 #  格式
 #  表头格式

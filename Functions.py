@@ -46,8 +46,8 @@ def writeByGoods(x, y, GoodsSupplier, GoodsInfo, GoodsTotalBiddingData, GoodsBid
         currentsheet.write(x + n, y + 6, xlwt.Formula('F' + str(x + n + 1) + '/C' + str(x + len(GoodsSupplier) + 1)),
                            percent_style)
         for m in range(0, len(Data.province)):
-            currentsheet.write(x + n, y + 7 + 3 * m, (intTran(GoodsBiddingFrame.iloc[n, m])), text_style)
-            currentsheet.write(x + n, y + 8 + 3 * m, (intTran(GoodsFrame.iloc[n, m])), text_style)
+            currentsheet.write(x + n, y + 8 + 3 * m, (intTran(GoodsBiddingFrame.iloc[n, m])), text_style)
+            currentsheet.write(x + n, y + 7 + 3 * m, (intTran(GoodsFrame.iloc[n, m])), text_style)
             currentsheet.write(x + n, y + 9 + 3 * m, (0 if (intTran(GoodsBiddingFrame.iloc[n, m]) == 0)
                                                       else (intTran(GoodsFrame.iloc[n, m]) /
                                                             intTran(GoodsBiddingFrame.iloc[n, m]))), percent_style)
@@ -59,15 +59,16 @@ def writeByGoods(x, y, GoodsSupplier, GoodsInfo, GoodsTotalBiddingData, GoodsBid
     currentsheet.write(x, y + 5, xlwt.Formula(mergeStr(x + 1)), text_style)
     currentsheet.write(x, y + 6, xlwt.Formula('F' + str(x + 1) + '/C' + str(x + 1)), percent_style)
     for m in range(0, len(Data.province)):
-        currentsheet.write(x, y + 7 + 3 * m, totalCountByProvince(m, GoodsBiddingFrame), text_style)
-        currentsheet.write(x, y + 8 + 3 * m, totalCountByProvince(m, GoodsFrame), text_style)
+        currentsheet.write(x, y + 8 + 3 * m, totalCountByProvince(m, GoodsBiddingFrame), text_style)
+        currentsheet.write(x, y + 7 + 3 * m, totalCountByProvince(m, GoodsFrame), text_style)
         currentsheet.write(x, y + 9 + 3 * m, (0 if (totalCountByProvince(m, GoodsBiddingFrame) == 0)
                                               else (totalCountByProvince(m, GoodsFrame) /
                                                     totalCountByProvince(m, GoodsBiddingFrame))), percent_style)
 
 
-def writeByGoodsPrice(x, y, GoodsSupplier, GoodsInfo, GoodsTotalBiddingData, GoodsSellData, totalCountData,
-                      currentsheet, table_style, text_style, percent_style):
+def writeByGoodsPrice(x, y, GoodsSupplier, GoodsInfo, GoodsTotalBiddingData, GoodsTotalPriceFrame,
+                      Goods96TotalPriceFrame, totalCountData, currentsheet, table_style, text_style, percent_style):
+    total = 0
     currentsheet.write_merge(x, x + len(GoodsSupplier), y, y, GoodsInfo, table_style)
     for n in range(0, len(GoodsSupplier)):
         currentsheet.write(x + n, y + 1, GoodsSupplier[n], table_style)
@@ -75,16 +76,27 @@ def writeByGoodsPrice(x, y, GoodsSupplier, GoodsInfo, GoodsTotalBiddingData, Goo
                            text_style)
         currentsheet.write(x + n, y + 3, GoodsTotalBiddingData[n], percent_style)
         currentsheet.write(x + n, y + 4, '', text_style)
-        currentsheet.write(x + n, y + 5, GoodsSellData[n], text_style)
+        currentsheet.write(x + n, y + 5, totalCountByProvider(n, GoodsSupplier, GoodsTotalPriceFrame), text_style)
         currentsheet.write(x + n, y + 6, xlwt.Formula('F' + str(x + n + 1) + '/C' + str(x + len(GoodsSupplier) + 1)),
                            percent_style)
+        total += totalCountByProvider(n, GoodsSupplier, GoodsTotalPriceFrame)
+        for m in range(0, len(Data.province)):
+            currentsheet.write(x + n, y + 7 + 3 * m, (intTran(GoodsTotalPriceFrame.iloc[n, m])), text_style)
+            currentsheet.write(x + n, y + 9 + 3 * m, (intTran(Goods96TotalPriceFrame.iloc[n, m])), text_style)
+            currentsheet.write(x + n, y + 8 + 3 * m, (
+                (intTran(GoodsTotalPriceFrame.iloc[n, m])) - (intTran(Goods96TotalPriceFrame.iloc[n, m]))), text_style)
     x += len(GoodsSupplier)
     currentsheet.write(x, y + 1, '%d家合计' % len(GoodsSupplier), table_style)
     currentsheet.write(x, y + 2, totalCountData, text_style)
     currentsheet.write(x, y + 3, 1, percent_style)
     currentsheet.write(x, y + 4, '', table_style)
-    currentsheet.write(x, y + 5, totalCount(GoodsSellData), text_style)
+    currentsheet.write(x, y + 5, total, text_style)
     currentsheet.write(x, y + 6, xlwt.Formula('F' + str(x + 1) + '/C' + str(x + 1)), percent_style)
+    for m in range(0, len(Data.province)):
+        currentsheet.write(x, y + 7 + 3 * m, totalCountByProvince(m, GoodsTotalPriceFrame), text_style)
+        currentsheet.write(x, y + 9 + 3 * m, totalCountByProvince(m, Goods96TotalPriceFrame), text_style)
+        currentsheet.write(x, y + 8 + 3 * m, (
+        totalCountByProvince(m, GoodsTotalPriceFrame) - totalCountByProvince(m, Goods96TotalPriceFrame)), text_style)
 
 
 def countByRow(result, dataframe, totalpriceframe, quantityframe, supplier):
@@ -105,10 +117,12 @@ def countByRow(result, dataframe, totalpriceframe, quantityframe, supplier):
             quantityframe.iloc[supplier.index(row['供应商']), Data.province.index(row['省分公司'])] += 1
 
 
-def glCountByRow(result, pricedata, quantitydata, supplier):
+def glCountByRow(result, totalpriceframe, supplier):
     for row in result:
-        pricedata[supplier.index(row['供应商'])] = row['价税合计']
-        quantitydata[supplier.index(row['供应商'])] = row['订单数']
+        if math.isnan(totalpriceframe.iloc[supplier.index(row['供应商']), Data.province.index(row['省分公司'])]):
+            totalpriceframe.iloc[supplier.index(row['供应商']), Data.province.index(row['省分公司'])] = row['价税合计']
+        else:
+            totalpriceframe.iloc[supplier.index(row['供应商']), Data.province.index(row['省分公司'])] += row['价税合计']
 
 
 def writeIn6(x, y, a, unit, GoodsSupplier, GoodsInfo, totalpriceframe, goodsframe, orderquantityframe, currentsheet,
